@@ -121,7 +121,7 @@ def sentiment():
 	graphJSON_hourly = json.dumps(fig_hourly, cls=plotly.utils.PlotlyJSONEncoder)
 	graphJSON_daily = json.dumps(fig_daily, cls=plotly.utils.PlotlyJSONEncoder)
 	
-	header= "Hourly Sentiment of {} Stock".format(ticker)
+	header= "{}".format(ticker)
 	description = """{}""".format(ticker)
 	return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),description=description)
 
