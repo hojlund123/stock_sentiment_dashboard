@@ -38,17 +38,19 @@ def parse_news(news_table):
 
         if len(date_scrape) == 1:
             time = date_scrape[0]
+            scrapedurl = x.find("a", {"class": "tab-link-news"})
             
         # else load 'date' as the 1st element and 'time' as the second    
         else:
             date = date_scrape[0]
             time = date_scrape[1]
+            scrapedurl = x.find("a", {"class": "tab-link-news"})
         
         # Append ticker, date, time and headline as a list to the 'parsed_news' list
-        parsed_news.append([date, time, text])
+        parsed_news.append([date, time, text, scrapedurl['href']])
         
         # Set column names
-        columns = ['date', 'time', 'headline']
+        columns = ['date', 'time', 'headline', 'url']
 
         # Convert the parsed_news list into a DataFrame called 'parsed_and_scored_news'
         parsed_news_df = pd.DataFrame(parsed_news, columns=columns)
@@ -119,13 +121,8 @@ def sentiment():
 	graphJSON_hourly = json.dumps(fig_hourly, cls=plotly.utils.PlotlyJSONEncoder)
 	graphJSON_daily = json.dumps(fig_daily, cls=plotly.utils.PlotlyJSONEncoder)
 	
-	header= "Hourly and Daily Sentiment of {} Stock".format(ticker)
-	description = """
-	The above chart averages the sentiment scores of {} stock hourly and daily.
-	The table below gives each of the most recent headlines of the stock and the negative, neutral, positive and an aggregated sentiment score.
-	The news headlines are obtained from the FinViz website.
-	Sentiments are given by the nltk.sentiment.vader Python library.
-    """.format(ticker)
+	header= "Hourly Sentiment of {} Stock".format(ticker)
+	description = """{}""".format(ticker)
 	return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),description=description)
 
 
