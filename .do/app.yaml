@@ -1,0 +1,6 @@
+name: stock_sentiment_dashboard
+services:
+- name: web
+  github:
+    repo: hojlund123/stock_sentiment_dashboard
+    branch: main
