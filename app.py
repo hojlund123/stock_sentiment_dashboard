@@ -13,7 +13,6 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 # for extracting data from finviz
 finviz_url = 'https://finviz.com/quote.ashx?t='
-globalnewswire = 'https://www.globenewswire.com/search/keyword/'.ticker.'?pageSize=10'
 
 def get_news(ticker):
     url = finviz_url + ticker
@@ -23,15 +22,13 @@ def get_news(ticker):
     html = BeautifulSoup(response)
     # Find 'news-table' in the Soup and load it into 'news_table'
     news_table = html.find(id='news-table')
-    news_div = html.find(id=pagnition-row.row)
-    return news_div
     return news_table
 	
 # parse news into dataframe
-def parse_news(news_div):
+def parse_news(news_table):
     parsed_news = []
     
-    for x in news_div.find_all('div', class_='pagging-list-item-text-container'):
+    for x in news_table.findAll('tr'):
         # read the text from each tr tag into text
         # get text from a only
         text = x.a.get_text() 
@@ -41,15 +38,13 @@ def parse_news(news_div):
 
         if len(date_scrape) == 1:
             time = date_scrape[0]
-            finscrapedurl = x.find("a", {"class": "tab-link-news"})
-            scrapedurl = x.find("a")
+            scrapedurl = x.find("a", {"class": "tab-link-news"})
             
         # else load 'date' as the 1st element and 'time' as the second    
         else:
             date = date_scrape[0]
             time = date_scrape[1]
-            finscrapedurl = x.find("a", {"class": "tab-link-news"})
-            scrapedurl = x.find("a")
+            scrapedurl = x.find("a", {"class": "tab-link-news"})
         
         # Append ticker, date, time and headline as a list to the 'parsed_news' list
         parsed_news.append([date, time, text, scrapedurl['href']])
