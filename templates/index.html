@@ -9,12 +9,12 @@
 	
 	<body>
 		<div class="container">
-		
+			<div class="row">
 			<!--<h1 style="padding:10px">hojlund's aktieanalyzer</h1>-->
 			
 			<!--<h3>Indtast et symbol for at se nyheder og udspecificeret analyse</h3>-->
 
-				<form action="sentiment" method="POST">
+				<form class="form-inline" action="sentiment" method="POST">
 					<div class="form-group">
 						<label for="text_field1">Aktie symbol</label>
 						<input class="form-control mx-sm-3" id="text_field1" aria-describedby="textHelpInline" placeholder="TSLA" name="ticker" type="text" required> 
@@ -22,6 +22,7 @@
 					</div>				
 					<input id="submit_button" type="Submit" class="btn btn-primary btn-sm">
 				</form>
+			</div>
 		</div>
 	</body>
 </html>
