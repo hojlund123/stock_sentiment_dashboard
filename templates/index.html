@@ -131,11 +131,12 @@
 			<h3>Indtast et symbol for at se nyheder og udspecificeret analyse</h3>
 
 				<form action="sentiment" method="POST" align="center">
-						
-					<b>Aktie symbol: </b>	
-					<input class="form-control" id="text_field" name="ticker" type="text" required> 				
-					<center><input id="submit_button" type="Submit" class="btn btn-primary"></center>
-					
+					<div class="form-group">
+						<label for="text_field1">Aktie symbol</label>
+						<input class="form-control" id="text_field1" aria-describedby="textHelp" placeholder="TSLA" name="ticker" type="text" required> 
+						<small id="textHelp" class="form-text text-muted">Indtast et aktiesymbol for at se detaljeret visning.</small>	
+					</div>				
+					<input id="submit_button" type="Submit" class="btn btn-primary">
 				</form>
 		</center>
 	</body>
