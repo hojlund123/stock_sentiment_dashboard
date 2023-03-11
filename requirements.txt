@@ -5,4 +5,5 @@ urllib3
 bs4
 plotly
 gunicorn
+json
 
