@@ -88,7 +88,7 @@ def plot_hourly_sentiment(parsed_and_scored_news, ticker):
     mean_scores = parsed_and_scored_news.resample('H').mean()
 
     # Plot a bar chart with plotly
-    fig = px.bar(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Hourly Sentiment Scores')
+    fig = px.box(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Hourly Sentiment Scores')
     return fig # instead of using fig.show(), we return fig and turn it into a graphjson object for displaying in web page later
 
 def plot_daily_sentiment(parsed_and_scored_news, ticker):
@@ -97,7 +97,7 @@ def plot_daily_sentiment(parsed_and_scored_news, ticker):
     mean_scores = parsed_and_scored_news.resample('D').mean()
 
     # Plot a bar chart with plotly
-    fig = px.bar(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Daily Sentiment Scores')
+    fig = px.box(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Daily Sentiment Scores')
     return fig # instead of using fig.show(), we return fig and turn it into a graphjson object for displaying in web page later
 
 app = Flask(__name__)
