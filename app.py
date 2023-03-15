@@ -105,9 +105,9 @@ def get_prices(ticker):
 #    # Get opening prices from yfinance
     stock_data = yfinance.download(ticker,start="2021-10-01", end="2022-02-14")
     data = stock_data.loc[:,"Open"].copy()
-    fig = px.box(data, x=data.index, y='price', title = ticker + ' Daily Stock Prices')
+    #fig = px.box(data, x=data.index, y='Open', title = ticker + ' Daily Stock Prices')
 
-    return fig
+    return stock_data
 
 
 app = Flask(__name__)
@@ -131,7 +131,7 @@ def sentiment():
     graphJSON_daily = json.dumps(fig_daily, cls=plotly.utils.PlotlyJSONEncoder)
     header= "{}".format(ticker)
     description = """{}""".format(ticker)
-    return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),tableprice=price_daily.to_html(classes='data'),description=description)
+    return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),tableprice=price_daily,description=description)
 
 
 
