@@ -3,6 +3,7 @@ from flask import Flask, render_template # for web app
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 import pandas as pd
+import yfinance
 import plotly
 import plotly.express as px
 import json # for graph plotting in website
@@ -100,11 +101,13 @@ def plot_daily_sentiment(parsed_and_scored_news, ticker):
     fig = px.bar(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Daily Sentiment Scores')
     return fig
 
-#def plot_daily_prices(parsed_and_scored_news, ticker):
-#    # Plot a box chart with plotly
-#    fig = px.box(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Daily Sentiment Scores')
-#
-#    return fig
+def get_prices(ticker):
+#    # Get opening prices from yfinance
+    stock_data = yfinance.download(ticker,start="2021-10-01", end="2022-02-14")
+    data = stock_data.loc[:,"Open"].copy()
+    fig = px.box(data, x=data.index, y='price', title = ticker + ' Daily Stock Prices')
+
+    return fig
 
 
 app = Flask(__name__)
@@ -122,15 +125,14 @@ def sentiment():
 	news_table = get_news(ticker)
 	parsed_news_df = parse_news(news_table)
 	parsed_and_scored_news = score_news(parsed_news_df)
-	fig_hourly = plot_hourly_sentiment(parsed_and_scored_news, ticker)
+    fig_hourly = plot_hourly_sentiment(parsed_and_scored_news, ticker)
 	fig_daily = plot_daily_sentiment(parsed_and_scored_news, ticker)
-
-	graphJSON_hourly = json.dumps(fig_hourly, cls=plotly.utils.PlotlyJSONEncoder)
-	graphJSON_daily = json.dumps(fig_daily, cls=plotly.utils.PlotlyJSONEncoder)
-	
-	header= "{}".format(ticker)
+    price_daily = get_prices(ticker)
+    graphJSON_hourly = json.dumps(fig_hourly, cls=plotly.utils.PlotlyJSONEncoder)
+    graphJSON_daily = json.dumps(fig_daily, cls=plotly.utils.PlotlyJSONEncoder)
+    header= "{}".format(ticker)
 	description = """{}""".format(ticker)
-	return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),description=description)
+	return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),tableprice=price_daily.to_html(classes='data')description=description)
 
 
 
