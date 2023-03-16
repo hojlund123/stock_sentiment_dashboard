@@ -48,11 +48,11 @@ def parse_news(news_table):
             scrapedurl = x.find("a", {"class": "tab-link-news"})
         
         # Append ticker, date, time and headline as a list to the 'parsed_news' list
-        parsed_news.append([date, time, text])
+        parsed_news.append([date, time, text, scrapedurl['href']])
         #scrapedurl['href']
         
         # Set column names
-        columns = ['date', 'time', 'headline']
+        columns = ['date', 'time', 'headline', 'url']
         #'url'
 
         # Convert the parsed_news list into a DataFrame called 'parsed_and_scored_news'
@@ -69,6 +69,8 @@ def score_news(parsed_news_df):
     
     # Iterate through the headlines and get the polarity scores using vader
     scores = parsed_news_df['headline'].apply(vader.polarity_scores).tolist()
+
+    #parsed_news_df_headline = "<a href='"parsed_news_df['url']+"'>"+parsed_news_df['headline']+"</a>"
 
     # Convert the 'scores' list of dicts into a DataFrame
     scores_df = pd.DataFrame(scores)
