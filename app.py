@@ -11,6 +11,8 @@ import json # for graph plotting in website
 import nltk
 nltk.downloader.download('vader_lexicon')
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import datetime 
+import dateutil.relativedelta as rd
 
 # for extracting data from finviz
 finviz_url = 'https://finviz.com/quote.ashx?t='
@@ -36,7 +38,7 @@ def parse_news(news_table):
         # splite text in the td tag into a list 
         date_scrape = x.td.text.split()
         # if the length of 'date_scrape' is 1, load 'time' as the only element
-
+        
         if len(date_scrape) == 1:
             time = date_scrape[0]
             scrapedurl = x.find("a", {"class": "tab-link-news"})
@@ -48,11 +50,11 @@ def parse_news(news_table):
             scrapedurl = x.find("a", {"class": "tab-link-news"})
         
         # Append ticker, date, time and headline as a list to the 'parsed_news' list
-        parsed_news.append([date, time, text, scrapedurl['href']])
+        parsed_news.append([date, time, text])
         #scrapedurl['href']
         
         # Set column names
-        columns = ['date', 'time', 'headline', 'url']
+        columns = ['date', 'time', 'headline']
         #'url'
 
         # Convert the parsed_news list into a DataFrame called 'parsed_and_scored_news'
@@ -60,7 +62,7 @@ def parse_news(news_table):
         
         # Create a pandas datetime object from the strings in 'date' and 'time' column
         parsed_news_df['datetime'] = pd.to_datetime(parsed_news_df['date'] + ' ' + parsed_news_df['time'])
-        
+    
     return parsed_news_df
         
 def score_news(parsed_news_df):
@@ -73,7 +75,8 @@ def score_news(parsed_news_df):
     #parsed_news_df_headline = "<a href='"parsed_news_df['url']+"'>"+parsed_news_df['headline']+"</a>"
 
     # Convert the 'scores' list of dicts into a DataFrame
-    scores_df = pd.DataFrame(scores)
+    scores_dffff = pd.DataFrame(scores)
+    scores_df = scores_dffff.round(2)
 
     # Join the DataFrames of the news and the list of dicts
     parsed_and_scored_news = parsed_news_df.join(scores_df, rsuffix='_right')
@@ -83,7 +86,7 @@ def score_news(parsed_news_df):
     
     parsed_and_scored_news = parsed_and_scored_news.drop(['date', 'time'], 1)    
         
-    parsed_and_scored_news = parsed_and_scored_news.rename(columns={"compound": "sentiment_score"})
+    parsed_and_scored_news = parsed_and_scored_news.rename(columns={"compound": "score"})
 
     return parsed_and_scored_news
 
@@ -93,7 +96,7 @@ def plot_hourly_sentiment(parsed_and_scored_news, ticker):
     mean_scores = parsed_and_scored_news.resample('H').mean()
 
     # Plot a bar chart with plotly
-    fig = px.bar(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Hourly Sentiment Scores')
+    fig = px.bar(mean_scores, x=mean_scores.index, y='score', title = ticker + ' Hourly Sentiment Scores')
     return fig
 
 def plot_daily_sentiment(parsed_and_scored_news, ticker):
@@ -102,18 +105,24 @@ def plot_daily_sentiment(parsed_and_scored_news, ticker):
     mean_scores = parsed_and_scored_news.resample('D').mean()
 
     # Plot a bar chart with plotly
-    fig = px.bar(mean_scores, x=mean_scores.index, y='sentiment_score', title = ticker + ' Daily Sentiment Scores')
+    fig = px.bar(mean_scores, x=mean_scores.index, y='score', title = ticker + ' Daily Sentiment Scores')
     return fig
 
 def get_prices(ticker):
 #    # Get opening prices from yfinance
-    stock_data = yfinance.download(ticker,start="2023-01-01", end="2023-01-10")
-    #stock_df = pd.DataFrame(stock_data)
-    #data = stock_data.loc[:,"Open"].copy()
+    # Date settings
+    now = datetime.datetime.now()
+    month = now + rd.relativedelta(months=-1)
+
+    stock_data = yfinance.download(ticker,start=month, end=now)
+
     columnz = ['Open', 'Low', 'Close', 'Adj Close', 'Volume']
-    # Convert the parsed_news list into a DataFrame called 'parsed_and_scored_news'
+
     parsed_price_df = pd.DataFrame(stock_data, columns=columnz)
+
+    # Rounded 2
     parsed_price_df = parsed_price_df.round(2)
+
     #fig = px.box(data, x=data.index, y='Open', title = ticker + ' Daily Stock Prices')
 
     return parsed_price_df
