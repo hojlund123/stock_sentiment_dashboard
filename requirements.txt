@@ -6,3 +6,5 @@ bs4
 plotly
 gunicorn
 yfinance
+datetime
+dateutil
