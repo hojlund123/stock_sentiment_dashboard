@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, render_template # for web app
+from flask import Flask, render_template, request # for web app
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -136,8 +136,9 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/sentiment', methods = ['POST'])
-def sentiment():
+@app.route('/stock', methods = ['POST'])
+
+def stock():
     ticker = flask.request.form['ticker'].upper()
     news_table = get_news(ticker)
     parsed_news_df = parse_news(news_table)
@@ -149,10 +150,21 @@ def sentiment():
     graphJSON_daily = json.dumps(fig_daily, cls=plotly.utils.PlotlyJSONEncoder)
     header= "{}".format(ticker)
     description = """{}""".format(ticker)
-    return render_template('sentiment.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),tableprice=parsed_price_df.to_html(classes='data'),description=description)
+    return render_template('stock.html',graphJSON_hourly=graphJSON_hourly, graphJSON_daily=graphJSON_daily, header=header,table=parsed_and_scored_news.to_html(classes='data'),tableprice=parsed_price_df.to_html(classes='data'),description=description)
 
 
+###############WORKING ON IT
+@app.route('/stock/<int:ticker>/')
+def show_post(ticker):
+    return render_template('details.html')
 
+@app.route('/params/')
+def params():
+    param = request.args.get('some_param')
+    if param:
+        return param
+    else:
+        return "bad request :(", 400  # handle missing param as 400 error
         
 if __name__ == '__main__':
     app.run()
